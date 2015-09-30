@@ -1,0 +1,61 @@
+
+site1dbvol:
+  image: debian:jessie
+
+site1databasedump:
+  build: .
+  dockerfile: Dockerfile.image1
+
+site1vol:
+  build: .
+  dockerfile: Dockerfile.image1
+
+site1db1:
+  image: debian:jessie
+  volumes_from:
+   - site1dbvol
+  command: /bin/bash -c "while [ 1 ]; do echo -n .; sleep 10; done"
+
+site1phpfpm1:
+  image: debian:jessie
+  links:
+   - site1db1:db
+  volumes_from:
+   - site1vol
+  command: /bin/bash -c "while [ 1 ]; do echo -n .; sleep 10; done"
+
+site1web1:
+  image: debian:jessie
+  links:
+   - site1phpfpm1:php_fpm
+  volumes_from:
+   - site1vol
+  command: /bin/bash -c "while [ 1 ]; do echo -n .; sleep 10; done"
+
+site1initialize:
+  image: debian:jessie
+  links:
+   - site1db1:db
+  volumes_from:
+   - site1vol
+   - site1databasedump
+
+selenium:
+  image: debian:jessie
+  links:
+   - site1web1:web
+  command: /bin/bash -c "while [ 1 ]; do echo -n .; sleep 10; done"
+
+behatphpcli:
+  image: debian:jessie
+  links:
+   - site1db1:db
+   - site1web1:web
+   - selenium:selenium
+  volumes_from:
+   - site1vol
+  volumes:
+   - ./resources/behat/behat.yml.patch:/behat.yml.patch
+   - ./resources/behat/patch_behat.yml.sh:/patch_behat.yml.sh
+  command: "/bin/true"
+

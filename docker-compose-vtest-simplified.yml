@@ -1,0 +1,15 @@
+
+site1databasedump:
+  build: .
+  dockerfile: Dockerfile.image1
+
+site1vol:
+  build: .
+  dockerfile: Dockerfile.image2
+
+site1initialize:
+  image: debian:jessie
+  volumes_from:
+   - site1vol
+   - site1databasedump
+

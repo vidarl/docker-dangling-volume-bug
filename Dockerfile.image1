@@ -1,0 +1,7 @@
+FROM debian:jessie
+
+#RUN mkdir /image1; dd if=/dev/zero of=/image1/a.txt bs=1024 count=0 seek=524288
+RUN mkdir /image1; dd if=/dev/zero of=/image1/a.txt bs=1024 count=0 seek=1024
+
+VOLUME [ "/image1" ]
+
